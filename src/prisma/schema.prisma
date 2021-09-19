@@ -1,0 +1,26 @@
+datasource db {
+  url      = env("DATABASE_URL")
+  provider = "postgres"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+model Channel {
+  id              Int      @id @default(autoincrement())
+  ChannelId       String   @unique
+  guild           Guild    @relation(fields: [guildId], references: [id])
+  guildId         Int
+  notifyMessageId String?
+  mentionUsers    String[]
+  mentionRoles    String[]
+}
+
+model Guild {
+  id              Int       @id @default(autoincrement())
+  guildId         String    @unique
+  notifyChannelId String?
+  channels        Channel[]
+}
