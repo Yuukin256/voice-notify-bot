@@ -1,0 +1,39 @@
+version: '3.9'
+
+x-dev-base: &dev-base
+  build: .
+  environment:
+    TZ: Asia/Tokyo
+  volumes:
+    - .:/app
+    - /app/node_modules
+
+services:
+  postgresql:
+    image: postgres:13.4
+    ports:
+      - 5432:5432
+    tty: true
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      # 本来、PostgreSQLのデータは/var/lib/postgresql/data直下に作成されるが、
+      # Dockerdaで/var/lib/postgresql/dataにデータを作成しようとすると失敗する
+      # そのため、アドホックではあるがデータ作成ディレクトリを1層深くしている
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./docker/db:/var/lib/postgresql/data
+
+  migrate:
+    <<: *dev-base
+    command: yarn migrate:deploy
+    depends_on:
+      - postgresql
+
+  app:
+    <<: *dev-base
+    command: yarn dev
+    restart: always
+    depends_on:
+      - postgresql
