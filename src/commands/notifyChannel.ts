@@ -33,11 +33,10 @@ const notifyChannelCommand: Command = {
     if (subCommand === 'show') {
       // データベースに通知するチャンネルが記録されていなかったとき
       if (!dbGuild.notifyChannelId) {
-        command.reply({
+        return command.reply({
           content:
             '通話開始時に通知メッセージを送信するテキストチャンネルは設定されていません。`/channel set` コマンドで設定可能です。',
         });
-        return;
       }
 
       // Discord 上の Channel を取得
@@ -46,16 +45,16 @@ const notifyChannelCommand: Command = {
       // 通知するチャンネルがデータベースにはあるが、Discord 上には存在しないとき
       if (!currentChannel) {
         await prisma.guild.update({ where: { id: dbGuild.id }, data: { notifyChannelId: null } });
-        command.reply({
+        return command.reply({
           content:
             '通話開始時に通知メッセージを送信するテキストチャンネルは設定されていません。`/channel set` コマンドで設定可能です。',
         });
-        return;
       }
 
       // 通知するチャンネルが存在するとき
-      command.reply({ content: `通話開始時に通知メッセージを送信するテキストチャンネルは ${currentChannel} です。` });
-      return;
+      return command.reply({
+        content: `通話開始時に通知メッセージを送信するテキストチャンネルは ${currentChannel} です。`,
+      });
     }
 
     if (subCommand === 'set') {
@@ -64,22 +63,19 @@ const notifyChannelCommand: Command = {
       // 通知するチャンネルの設定を削除するとき
       if (!inputChannel) {
         await prisma.guild.update({ where: { id: dbGuild.id }, data: { notifyChannelId: null } });
-        command.reply(`通話開始時に通知メッセージを送信するテキストチャンネルの設定を削除しました。`);
-        return;
+        return command.reply(`通話開始時に通知メッセージを送信するテキストチャンネルの設定を削除しました。`);
       }
 
       // テキストチャンネルまたはニュースチャンネル以外が指定された場合
       if (inputChannel.type !== 'GUILD_TEXT' && inputChannel.type !== 'GUILD_NEWS') {
-        command.reply({
+        await command.reply({
           content: `${inputChannel} に通知を行うことはできません。テキストチャンネルまたはニュースチャンネルを指定してください。`,
         });
-        return;
       }
 
       // 通知するチャンネルを設定するとき
       await prisma.guild.update({ where: { id: dbGuild.id }, data: { notifyChannelId: inputChannel.id } });
-      command.reply(`通話開始時に通知メッセージを送信するテキストチャンネルを ${inputChannel} に設定しました。`);
-      return;
+      return command.reply(`通話開始時に通知メッセージを送信するテキストチャンネルを ${inputChannel} に設定しました。`);
     }
   },
 };

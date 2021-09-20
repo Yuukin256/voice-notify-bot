@@ -6,7 +6,7 @@ const pingCommand: Command = {
     description: 'Botのレイテンシを返します。',
   },
   exec: (command) => {
-    command.reply({ content: `Ping: ${command.client.ws.ping}ms` });
+    return command.reply({ content: `Ping: ${command.client.ws.ping}ms` });
   },
 };
 
