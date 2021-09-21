@@ -10,7 +10,7 @@ generator client {
 
 model Channel {
   id              Int      @id @default(autoincrement())
-  ChannelId       String   @unique
+  channelId       String   @unique
   guild           Guild    @relation(fields: [guildId], references: [id])
   guildId         Int
   notifyMessageId String?

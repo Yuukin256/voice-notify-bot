@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "Channel" (
     "id" SERIAL NOT NULL,
-    "ChannelId" TEXT NOT NULL,
+    "channelId" TEXT NOT NULL,
     "guildId" INTEGER NOT NULL,
     "notifyMessageId" TEXT,
     "mentionUsers" TEXT[],
@@ -20,7 +20,7 @@ CREATE TABLE "Guild" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Channel_ChannelId_key" ON "Channel"("ChannelId");
+CREATE UNIQUE INDEX "Channel_channelId_key" ON "Channel"("channelId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Guild_guildId_key" ON "Guild"("guildId");
