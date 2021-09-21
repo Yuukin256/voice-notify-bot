@@ -27,5 +27,5 @@
       "typescript": {}
     }
   },
-  "ignorePatterns": ["docker/"]
+  "ignorePatterns": ["docker/", "dist/"]
 }
