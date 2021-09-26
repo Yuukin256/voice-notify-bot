@@ -1,5 +1,6 @@
-import { Client, Intents } from 'discord.js';
 import { PrismaClient } from '@prisma/client';
+import { Client, Intents } from 'discord.js';
+
 import CommandHandler from './commandHandler';
 
 const prisma = new PrismaClient();

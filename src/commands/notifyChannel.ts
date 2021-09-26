@@ -27,7 +27,16 @@ const notifyChannelCommand: Command = {
     ],
   },
   exec: async (command, dbGuild, prisma) => {
-    const subCommand = command.options.getSubcommand();
+    const handlePrismaError = (err: Error) => {
+      command.reply({ content: '内部エラーが発生しました。' });
+      throw err;
+    };
+
+    const consoleError = (err: Error) => {
+      console.error(err);
+    };
+
+    const subCommand = command.options.getSubcommand(true);
 
     // 通知するチャンネルを確認するとき
     if (subCommand === 'show') {
@@ -44,11 +53,18 @@ const notifyChannelCommand: Command = {
 
       // 通知するチャンネルがデータベースにはあるが、Discord 上には存在しないとき
       if (!currentChannel) {
-        await prisma.guild.update({ where: { id: dbGuild.id }, data: { notifyChannelId: null } });
-        return command.reply({
-          content:
-            '通話開始時に通知メッセージを送信するテキストチャンネルは設定されていません。`/channel set` コマンドで設定可能です。',
-        });
+        prisma.guild
+          .update({ where: { id: dbGuild.id }, data: { notifyChannelId: null } })
+          .catch(handlePrismaError)
+          .then(() => {
+            return command.reply({
+              content:
+                '通話開始時に通知メッセージを送信するテキストチャンネルは設定されていません。`/channel set` コマンドで設定可能です。',
+            });
+          })
+          .catch(consoleError);
+
+        return;
       }
 
       // 通知するチャンネルが存在するとき
@@ -62,20 +78,34 @@ const notifyChannelCommand: Command = {
 
       // 通知するチャンネルの設定を削除するとき
       if (!inputChannel) {
-        await prisma.guild.update({ where: { id: dbGuild.id }, data: { notifyChannelId: null } });
-        return command.reply(`通話開始時に通知メッセージを送信するテキストチャンネルの設定を削除しました。`);
+        prisma.guild
+          .update({ where: { id: dbGuild.id }, data: { notifyChannelId: null } })
+          .catch(handlePrismaError)
+          .then(() => {
+            return command.reply(`通話開始時に通知メッセージを送信するテキストチャンネルの設定を削除しました。`);
+          })
+          .catch(consoleError);
+
+        return;
       }
 
       // テキストチャンネルまたはニュースチャンネル以外が指定された場合
       if (inputChannel.type !== 'GUILD_TEXT' && inputChannel.type !== 'GUILD_NEWS') {
-        await command.reply({
+        return command.reply({
           content: `${inputChannel} に通知を行うことはできません。テキストチャンネルまたはニュースチャンネルを指定してください。`,
         });
       }
 
       // 通知するチャンネルを設定するとき
-      await prisma.guild.update({ where: { id: dbGuild.id }, data: { notifyChannelId: inputChannel.id } });
-      return command.reply(`通話開始時に通知メッセージを送信するテキストチャンネルを ${inputChannel} に設定しました。`);
+      prisma.guild
+        .update({ where: { id: dbGuild.id }, data: { notifyChannelId: inputChannel.id } })
+        .catch(handlePrismaError)
+        .then(() => {
+          return command.reply(
+            `通話開始時に通知メッセージを送信するテキストチャンネルを ${inputChannel} に設定しました。`
+          );
+        })
+        .catch(consoleError);
     }
   },
 };
