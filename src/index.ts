@@ -15,27 +15,14 @@ client.once('ready', () => {
   console.log('ready!');
 });
 
-client.on('messageCreate', (message) => {
-  if (!message.guild || !message.guildId) return;
-
+client.on('guildCreate', (guild) => {
   prisma.guild.upsert({
-    where: { guildId: message.guildId },
-    create: { guildId: message.guildId },
+    where: { guildId: guild.id },
+    create: { guildId: guild.id },
     update: {},
   });
 
-  if (message.author.bot || !client.user) return;
-
-  if (message.mentions.has(client.user) && message.content.includes('init')) {
-    commandHandler
-      .setCommandsToGuild(message.guild)
-      .catch(() => {
-        message.reply({ content: 'エラーが発生しました。再度お試しください。' });
-      })
-      .then(() => {
-        message.reply({ content: 'このサーバーにコマンドを登録しました。' });
-      });
-  }
+  commandHandler.setCommandsToGuild(guild);
 });
 
 client.on('interactionCreate', async (interaction) => {
