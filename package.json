@@ -5,10 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node src/index.ts",
-    "generate": "prisma generate --schema=src/prisma/schema.prisma",
-    "migrate:dev": "prisma migrate dev --schema=src/prisma/schema.prisma",
-    "migrate:deploy": "prisma migrate deploy --schema=src/prisma/schema.prisma",
-    "studio": "prisma studio --schema=src/prisma/schema.prisma",
+    "generate": "prisma generate",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "studio": "prisma studio",
     "build": "tsc",
     "start": "node ."
   },
@@ -27,6 +27,9 @@
     "prisma": "^3.3.0",
     "ts-node": "^10.4.0",
     "typescript": "^4.4.4"
+  },
+  "prisma": {
+    "schema": "src/prisma/schema.prisma"
   },
   "engines": {
     "node": ">=16.6.0"
