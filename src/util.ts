@@ -1,9 +1,9 @@
-import { EmbedFieldData, Role, StageChannel, User, VoiceChannel } from 'discord.js';
+import { EmbedFieldData, Role, User, BaseGuildVoiceChannel } from 'discord.js';
 
 export const nonNullable = <T>(value: T): value is NonNullable<T> => value != null;
 
 export const makeMentionSettingEmbedFieldData = (
-  channel: VoiceChannel | StageChannel,
+  channel: BaseGuildVoiceChannel,
   roles: Role[],
   users: User[]
 ): EmbedFieldData => {
