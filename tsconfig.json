@@ -5,16 +5,13 @@
     "module": "CommonJS",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "target": "es6",
     "lib": ["ESNext"],
-    "baseUrl": "./src/",
-    "paths": {
-      "#/*": ["*"]
-    }
+    "baseUrl": "./src/"
   },
-  "include": ["src/*.ts"]
+  "include": ["src/**/*"]
 }

@@ -21,9 +21,6 @@ services:
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
-      # 本来、PostgreSQLのデータは/var/lib/postgresql/data直下に作成されるが、
-      # Dockerdaで/var/lib/postgresql/dataにデータを作成しようとすると失敗する
-      # そのため、アドホックではあるがデータ作成ディレクトリを1層深くしている
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - ./docker/db:/var/lib/postgresql/data
