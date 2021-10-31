@@ -30,7 +30,7 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 client
-  .login(process.env.DISCORD_TOKEN ?? '')
+  .login()
   .catch((e) => {
     console.error(e);
   })
