@@ -12,7 +12,7 @@ const mentionOptions = [...Array(24)].map<ApplicationCommandOptionData>((_, i) =
 }));
 
 const resolveRoles = (roles: CommandInteractionResolvedData['roles'], guild: Guild): Role[] => {
-  return roles?.map((v) => guild.roles.resolve(v.id)).filter(nonNullable) ?? [];
+  return roles?.map((v) => guild.roles.resolve(v?.id ?? '')).filter(nonNullable) ?? [];
 };
 
 const setCommand: Command = {
