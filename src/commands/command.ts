@@ -1,6 +1,5 @@
-import { ApplicationCommandData, CommandInteraction } from 'discord.js';
-
 import { Channel, Guild, PrismaClient } from '.prisma/client';
+import { ApplicationCommandData, CommandInteraction } from 'discord.js';
 
 export type CommandInteractionWithGuild = CommandInteraction & { guild: Guild; guildId: string };
 
