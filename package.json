@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@prisma/client": "^3.10.0",
+    "dayjs": "^1.10.8",
     "discord.js": "^13.6.0"
   },
   "devDependencies": {
@@ -41,7 +42,7 @@
     "schema": "src/prisma/schema.prisma"
   },
   "engines": {
-    "node": "^16.6.0"
+    "node": "^16.10.0"
   },
-  "packageManager": "yarn"
+  "packageManager": "yarn@3.2.0"
 }
