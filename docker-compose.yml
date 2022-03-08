@@ -1,0 +1,48 @@
+version: '3.9'
+
+x-dev-base: &dev-base
+  build: .
+  environment:
+    - DATABASE_URL=postgresql://user:password@postgresql/mydb
+    - TZ=Asia/Tokyo
+  env_file:
+    - .env
+  volumes:
+    - .:/app
+    - /app/node_modules
+
+services:
+  postgresql:
+    image: postgres:13.4
+    ports:
+      - 5432:5432
+    tty: true
+    restart: always
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./docker/db:/var/lib/postgresql/data
+
+  migrate:
+    <<: *dev-base
+    command: yarn migrate:deploy
+    depends_on:
+      - postgresql
+
+  studio:
+    <<: *dev-base
+    command: yarn studio
+    ports:
+      - 5555:5555
+    restart: always
+    depends_on:
+      - postgresql
+
+  bot:
+    <<: *dev-base
+    command: yarn dev
+    restart: always
+    depends_on:
+      - postgresql

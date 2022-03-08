@@ -1,16 +1,17 @@
 {
-	"compilerOptions": {
-		"outDir": "./dist",
-		"moduleResolution": "Node",
-		"module": "es6",
-		"noImplicitReturns": true,
-		"noUnusedLocals": true,
-		"sourceMap": false,
-		"strict": true,
-		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-		"target": "es6",
-		"lib": ["ESNext", "DOM"]
-	},
-	"include": ["src/*.ts"]
+  "compilerOptions": {
+    "outDir": "./dist",
+    "moduleResolution": "Node",
+    "module": "CommonJS",
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "sourceMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es6",
+    "lib": ["ESNext"],
+    "baseUrl": "./src/"
+  },
+  "include": ["src/**/*"]
 }
