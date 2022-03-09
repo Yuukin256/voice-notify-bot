@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { Client, Intents } from 'discord.js';
 
 import CommandHandler from './commandHandler';
-import { voiceEnd, voiceStart } from 'voiceNotify';
+import { voiceEnd, voiceStart } from './voiceNotify';
 
 const prisma = new PrismaClient();
 
