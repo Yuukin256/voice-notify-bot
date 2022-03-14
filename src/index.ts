@@ -16,13 +16,16 @@ client.once('ready', () => {
   console.log('ready!');
 });
 
+// サーバー参加時
 client.on('guildCreate', (guild) => {
+  // サーバーの設定を DB に作成
   prisma.guild.upsert({
     where: { guildId: guild.id },
     create: { guildId: guild.id },
     update: {},
   });
 
+  // Discord サーバーにコマンドを登録
   commandHandler.setCommandsToGuild(guild);
 });
 
