@@ -19,10 +19,10 @@ const prepare = async (voiceChannel: VoiceBasedChannel, prisma: PrismaClient): P
   });
 
   // DBに設定が存在するか
-  if (voiceChannelOnPrisma && voiceChannelOnPrisma.guild.notifyChannelId) {
+  if (voiceChannelOnPrisma?.guild.notifyChannelId) {
     const notifyChannel = voiceChannel.guild.channels.resolve(voiceChannelOnPrisma.guild.notifyChannelId);
 
-    // お知らせチャンネルが存在し、テキストチャンネルであるか
+    // お知らせチャンネルが存在するテキストチャンネルであるか
     if (notifyChannel?.isText()) {
       return { notifyChannel, voiceChannelOnPrisma };
     }
