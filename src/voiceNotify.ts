@@ -29,8 +29,12 @@ const prepare = async (voiceChannel: VoiceBasedChannel, prisma: PrismaClient): P
   }
 };
 
+// setTimeout の Promise 化
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
 export const voiceStart = async (voiceChannel: VoiceBasedChannel, prisma: PrismaClient) => {
-  const prepared = await prepare(voiceChannel, prisma);
+  // 5000ms 以上待つ
+  const [prepared] = await Promise.all([prepare(voiceChannel, prisma), sleep(5000)]);
 
   // データがない場合は即時 return
   if (!prepared) {
