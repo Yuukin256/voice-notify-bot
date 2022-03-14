@@ -34,7 +34,9 @@ const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve,
 
 export const voiceStart = async (voiceChannel: VoiceBasedChannel, prisma: PrismaClient) => {
   // 5000ms 以上待つ
-  const [prepared] = await Promise.all([prepare(voiceChannel, prisma), sleep(5000)]);
+  await sleep(5000);
+
+  const prepared = await prepare(voiceChannel, prisma);
 
   // データがない場合は即時 return
   if (!prepared) {
@@ -42,6 +44,21 @@ export const voiceStart = async (voiceChannel: VoiceBasedChannel, prisma: Prisma
   }
 
   const { voiceChannelOnPrisma, notifyChannel } = prepared;
+
+  // ボイスチャンネルに人が居ないならば即時 return
+  if (voiceChannel.members.size === 0) {
+    return;
+  }
+
+  // 既に DB 上に通知メッセージが記録されている状態で
+  if (voiceChannelOnPrisma.notifyMessageId) {
+    const notifyMessage = notifyChannel.messages.resolve(voiceChannelOnPrisma.notifyMessageId);
+    // メッセージが今から 5000ms 以内に作成されたものであるならば
+    if (dayjs(notifyMessage?.createdAt).add(5000, 'ms').isAfter(new Date())) {
+      // 即時 return;
+      return;
+    }
+  }
 
   const roleMentions = voiceChannelOnPrisma.mentionRoles.map((roleId) => voiceChannel.guild.roles.resolve(roleId));
   const userMentions = voiceChannelOnPrisma.mentionUsers.map((userId) => voiceChannel.guild.members.resolve(userId));
