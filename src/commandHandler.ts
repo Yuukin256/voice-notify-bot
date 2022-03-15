@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { ApplicationCommand, Collection, CommandInteraction, Guild } from 'discord.js';
 
+import clearCommand from './commands/clear';
 import { Command, CommandInteractionWithGuild } from './commands/command';
 import notifyChannelCommand from './commands/notifyChannel';
 import pingCommand from './commands/ping';
@@ -8,7 +9,7 @@ import setCommand from './commands/set';
 
 export default class CommandHandler {
   commands = new Collection<string, Command>(
-    [pingCommand, notifyChannelCommand, setCommand].map((cmd) => [cmd.data.name, cmd])
+    [pingCommand, notifyChannelCommand, setCommand, clearCommand].map((cmd) => [cmd.data.name, cmd])
   );
   prisma: PrismaClient;
 
