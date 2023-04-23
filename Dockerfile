@@ -4,5 +4,6 @@ WORKDIR /app
 
 COPY . .
 
+RUN apk add --update --no-cache openssl1.1-compat
 RUN yarn install
 RUN yarn generate
