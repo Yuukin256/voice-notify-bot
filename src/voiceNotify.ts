@@ -1,6 +1,14 @@
 import { Channel, Guild, PrismaClient } from '@prisma/client';
 import dayjs from 'dayjs';
-import { MessageEmbed, NewsChannel, TextChannel, ThreadChannel, VoiceBasedChannel } from 'discord.js';
+import {
+  ChannelType,
+  EmbedBuilder,
+  NewsChannel,
+  TextChannel,
+  ThreadChannel,
+  VoiceBasedChannel,
+  Colors,
+} from 'discord.js';
 import { nonNullable } from './util';
 
 type PrepareReturn = Promise<{
@@ -23,7 +31,7 @@ const prepare = async (voiceChannel: VoiceBasedChannel, prisma: PrismaClient): P
     const notifyChannel = voiceChannel.guild.channels.resolve(voiceChannelOnPrisma.guild.notifyChannelId);
 
     // お知らせチャンネルが存在するテキストチャンネルであるか
-    if (notifyChannel?.isText()) {
+    if (notifyChannel?.type === ChannelType.GuildText) {
       return { notifyChannel, voiceChannelOnPrisma };
     }
   }
@@ -67,13 +75,13 @@ export const voiceStart = async (voiceChannel: VoiceBasedChannel, prisma: Prisma
   const clientUser = voiceChannel.client.user;
 
   const content = `${mentions.join(' ')} ${member?.displayName}が${voiceChannel}で通話を開始しました！`;
-  const embed = new MessageEmbed()
+  const embed = new EmbedBuilder()
     .setTitle(`${voiceChannel.name}で通話中です`)
     .setAuthor({ name: `${member?.displayName} (${member?.user.tag})`, iconURL: member?.user.displayAvatarURL() })
-    .setColor('GREEN')
-    .addField('通話開始', dayjs().format('YYYY/MM/DD HH:mm:ss'))
+    .setColor(Colors.Green)
+    .addFields({ name: '通話開始', value: dayjs().format('YYYY/MM/DD HH:mm:ss') })
     .setFooter({
-      text: `${voiceChannel.guild.me?.displayName} (${clientUser?.tag})`,
+      text: `${voiceChannel.guild.members.me?.displayName} (${clientUser?.tag})`,
       iconURL: clientUser?.displayAvatarURL(),
     })
     .setTimestamp();
@@ -105,10 +113,12 @@ export const voiceEnd = async (voiceChannel: VoiceBasedChannel, prisma: PrismaCl
 
   // お知らせメッセージが存在するか
   if (notifyMessage && notifyMessage.embeds[0]) {
-    const embed = notifyMessage.embeds[0]
-      .setTitle('')
-      .addField('通話終了', dayjs().format('YYYY/MM/DD HH:mm:ss'))
-      .setColor('DARK_GREY')
+    const embed = new EmbedBuilder()
+      .setTitle(null)
+      .setAuthor(notifyMessage.embeds[0].author)
+      .setColor(Colors.Grey)
+      .addFields(...notifyMessage.embeds[0].fields, { name: '通話終了', value: dayjs().format('YYYY/MM/DD HH:mm:ss') })
+      .setFooter(notifyMessage.embeds[0].footer)
       .setTimestamp();
 
     notifyMessage.edit({ content: `${voiceChannel}の通話は終了しました！`, embeds: [embed] });

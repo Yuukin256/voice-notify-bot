@@ -1,13 +1,13 @@
 import { Channel, Guild, PrismaClient } from '.prisma/client';
-import { ApplicationCommandData, CommandInteraction } from 'discord.js';
+import { ApplicationCommandData, ChatInputCommandInteraction } from 'discord.js';
 
-export type CommandInteractionWithGuild = CommandInteraction & { guild: Guild; guildId: string };
+export type CommandInteractionWithGuild = ChatInputCommandInteraction & { guild: Guild; guildId: string };
 
 export interface Command {
   data: ApplicationCommandData;
   exec: (
     command: CommandInteractionWithGuild,
     dbGuild: Guild & { channels: Channel[] },
-    prisma: PrismaClient
+    prisma: PrismaClient,
   ) => unknown;
 }

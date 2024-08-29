@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { ApplicationCommand, Collection, CommandInteraction, Guild } from 'discord.js';
+import { ApplicationCommand, ChatInputCommandInteraction, Collection, Guild } from 'discord.js';
 
 import clearCommand from './commands/clear';
 import { Command, CommandInteractionWithGuild } from './commands/command';
@@ -9,7 +9,7 @@ import setCommand from './commands/set';
 
 export default class CommandHandler {
   commands = new Collection<string, Command>(
-    [pingCommand, notifyChannelCommand, setCommand, clearCommand].map((cmd) => [cmd.data.name, cmd])
+    [pingCommand, notifyChannelCommand, setCommand, clearCommand].map((cmd) => [cmd.data.name, cmd]),
   );
   prisma: PrismaClient;
 
@@ -21,7 +21,7 @@ export default class CommandHandler {
     return guild.commands.set(this.commands.map((cmd) => cmd.data));
   }
 
-  public async execCommand(command: CommandInteraction): Promise<void> {
+  public async execCommand(command: ChatInputCommandInteraction): Promise<void> {
     if (!command.guildId || !command.guild) return;
 
     const exec = this.commands.get(command.commandName)?.exec;

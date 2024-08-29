@@ -1,1 +1,1 @@
-'*.{ts,json}': ['yarn lint:fix', 'yarn format']
+'*.{ts,json}': ['bun lint:fix', 'bun format']

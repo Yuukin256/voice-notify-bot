@@ -1,11 +1,20 @@
-import { ApplicationCommandOptionData, CommandInteractionResolvedData, Guild, MessageEmbed, Role } from 'discord.js';
+import {
+  ApplicationCommandOptionData,
+  ApplicationCommandOptionType,
+  ChannelType,
+  Colors,
+  CommandInteractionResolvedData,
+  EmbedBuilder,
+  Guild,
+  Role,
+} from 'discord.js';
 
 import { makeMentionSettingEmbedFieldData, nonNullable } from '../util';
 
 import { Command } from './command';
 
 const mentionOptions = [...Array(24)].map<ApplicationCommandOptionData>((_, i) => ({
-  type: 'MENTIONABLE',
+  type: ApplicationCommandOptionType.Mentionable,
   name: `mention${i + 1}`,
   description: 'ボイスチャンネルで通話が始まった際にメンションするロール/ユーザー',
   required: false,
@@ -21,7 +30,7 @@ const setCommand: Command = {
     description: 'ボイスチャンネルで通話が始まった際にメンションするロール/ユーザーを設定します。',
     options: [
       {
-        type: 'CHANNEL',
+        type: ApplicationCommandOptionType.Channel,
         name: 'channel',
         description: 'このボイスチャンネルで通話が始まった際に通知を行います。',
         required: true,
@@ -30,17 +39,21 @@ const setCommand: Command = {
     ],
   },
   exec: (command, dbGuild, prisma) => {
-    const channelData = command.options.getChannel('channel', true);
-    const channel = command.guild.channels.resolve(channelData.id);
+    const channelData = command.options.get('channel', true);
+    if (!channelData.channel?.id) {
+      throw new Error('チャンネルIDが取得できませんでした');
+    }
 
-    if (!channel?.isVoice()) {
+    const channel = command.guild.channels.resolve(channelData.channel.id);
+
+    if (channel?.type !== ChannelType.GuildVoice) {
       return command.reply({
         content: `${channel} はボイスチャンネルではありません。\`channel\` パラメータにはボイスチャンネルを指定してください。`,
       });
     }
 
-    const roles = resolveRoles(command.options.resolved.roles, command.guild);
-    const users = [...(command.options.resolved.users?.values() ?? [])];
+    const roles = resolveRoles(command.options.resolved?.roles, command.guild);
+    const users = [...(command.options.resolved?.users?.values() ?? [])];
 
     return prisma.channel
       .upsert({
@@ -67,7 +80,11 @@ const setCommand: Command = {
 
         return command.reply({
           embeds: [
-            new MessageEmbed().setTitle('通知設定を登録しました。').addFields(embed).setTimestamp().setColor('GREEN'),
+            new EmbedBuilder()
+              .setTitle('通知設定を登録しました。')
+              .addFields(embed)
+              .setTimestamp()
+              .setColor(Colors.Green),
           ],
         });
       })

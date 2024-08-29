@@ -1,12 +1,13 @@
+import { ApplicationCommandOptionType, ChannelType } from 'discord.js';
 import { Command } from './command';
 
-const pingCommand: Command = {
+const clearCommand: Command = {
   data: {
     name: 'clear',
     description: 'ボイスチャンネルで通話が始まった際の通知設定を削除します。',
     options: [
       {
-        type: 'CHANNEL',
+        type: ApplicationCommandOptionType.Channel,
         name: 'channel',
         description: 'このボイスチャンネルで通話が始まった際の通知設定を削除します。',
         required: true,
@@ -14,10 +15,15 @@ const pingCommand: Command = {
     ],
   },
   exec: (command, dbGuild, prisma) => {
-    const channelData = command.options.getChannel('channel', true);
-    const channel = command.guild.channels.resolve(channelData.id);
+    const channelData = command.options.get('channel', true);
 
-    if (!channel?.isVoice()) {
+    if (!channelData.channel?.id) {
+      throw new Error('チャンネルIDが取得できませんでした');
+    }
+
+    const channel = command.guild.channels.resolve(channelData.channel?.id);
+
+    if (channel?.type !== ChannelType.GuildVoice) {
       return command.reply({
         content: `${channel} はボイスチャンネルではありません。\`channel\` パラメータにはボイスチャンネルを指定してください。`,
       });
@@ -46,4 +52,4 @@ const pingCommand: Command = {
   },
 };
 
-export default pingCommand;
+export default clearCommand;

@@ -1,3 +1,10 @@
+// import {
+//   ApplicationCommandOptionType,
+//   SlashCommandBuilder,
+//   SlashCommandChannelOption,
+//   SlashCommandSubcommandBuilder,
+// } from 'discord.js';
+import { ApplicationCommandOptionType, ChannelType } from 'discord.js';
 import { Command } from './command';
 
 const notifyChannelCommand: Command = {
@@ -6,17 +13,17 @@ const notifyChannelCommand: Command = {
     description: '通話開始時に通知メッセージを送信するテキストチャンネルを確認/設定します。',
     options: [
       {
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         name: 'show',
         description: '通話開始時に通知メッセージを送信するテキストチャンネルを返します。',
       },
       {
-        type: 'SUB_COMMAND',
+        type: ApplicationCommandOptionType.Subcommand,
         name: 'set',
         description: '通話開始時に通知メッセージを送信するテキストチャンネルを設定します。',
         options: [
           {
-            type: 'CHANNEL',
+            type: ApplicationCommandOptionType.Channel,
             name: 'channel',
             description:
               '通話開始時に通知メッセージを送信するテキストチャンネル。入力しなかった場合は現在の設定を削除します。',
@@ -26,6 +33,28 @@ const notifyChannelCommand: Command = {
       },
     ],
   },
+
+  // new SlashCommandBuilder()
+  // .setName('notifychannel')
+  // .setDescription('通話開始時に通知メッセージを送信するテキストチャンネルを確認/設定します。')
+  // .addSubcommand(
+  //   new SlashCommandSubcommandBuilder()
+  //     .setName('set')
+  //     .setDescription('通話開始時に通知メッセージを送信するテキストチャンネルを返します。'),
+  // )
+  // .addSubcommand(
+  //   new SlashCommandSubcommandBuilder()
+  //     .setName('set')
+  //     .setDescription('通話開始時に通知メッセージを送信するテキストチャンネルを設定します。')
+  //     .addChannelOption(
+  //       new SlashCommandChannelOption()
+  //         .setName('channel')
+  //         .setDescription(
+  //           '通話開始時に通知メッセージを送信するテキストチャンネル。入力しなかった場合は現在の設定を削除します。',
+  //         )
+  //         .setRequired(false),
+  //     ),
+  // ),
   exec: async (command, dbGuild, prisma) => {
     const handlePrismaError = (err: Error) => {
       command.reply({ content: '内部エラーが発生しました。' });
@@ -89,10 +118,10 @@ const notifyChannelCommand: Command = {
         return;
       }
 
-      // テキストチャンネルまたはニュースチャンネル以外が指定された場合
-      if (inputChannel.type !== 'GUILD_TEXT' && inputChannel.type !== 'GUILD_NEWS') {
+      // テキストチャンネルまたはアナウンスチャンネル以外が指定された場合
+      if (inputChannel.type !== ChannelType.GuildText && inputChannel.type !== ChannelType.GuildAnnouncement) {
         return command.reply({
-          content: `${inputChannel} に通知を行うことはできません。テキストチャンネルまたはニュースチャンネルを指定してください。`,
+          content: `${inputChannel} に通知を行うことはできません。通常のテキストチャンネルまたはアナウンスチャンネルを指定してください。`,
         });
       }
 
@@ -102,11 +131,14 @@ const notifyChannelCommand: Command = {
         .catch(handlePrismaError)
         .then(() => {
           return command.reply(
-            `通話開始時に通知メッセージを送信するテキストチャンネルを ${inputChannel} に設定しました。`
+            `通話開始時に通知メッセージを送信するテキストチャンネルを ${inputChannel} に設定しました。`,
           );
         })
         .catch(consoleError);
+      return;
     }
+
+    return;
   },
 };
 

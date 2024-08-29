@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { Client, Intents } from 'discord.js';
+import { Client, GatewayIntentBits } from 'discord.js';
 
 import CommandHandler from './commandHandler';
 import { voiceEnd, voiceStart } from './voiceNotify';
@@ -7,7 +7,7 @@ import { voiceEnd, voiceStart } from './voiceNotify';
 const prisma = new PrismaClient();
 
 const client = new Client({
-  intents: Intents.FLAGS.GUILDS | Intents.FLAGS.GUILD_MESSAGES | Intents.FLAGS.GUILD_VOICE_STATES,
+  intents: GatewayIntentBits.Guilds | GatewayIntentBits.GuildMessages | GatewayIntentBits.GuildVoiceStates,
 });
 
 const commandHandler = new CommandHandler(prisma);
@@ -30,7 +30,9 @@ client.on('guildCreate', (guild) => {
 });
 
 client.on('interactionCreate', async (interaction) => {
-  if (interaction.isCommand()) commandHandler.execCommand(interaction);
+  if (interaction.isChatInputCommand()) {
+    commandHandler.execCommand(interaction);
+  }
 });
 
 client.on('voiceStateUpdate', async (oldState, newState) => {
